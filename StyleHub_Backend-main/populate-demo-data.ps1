@@ -17,43 +17,43 @@ $Rand = Get-Random -Minimum 1000 -Maximum 9999
 # 1. Define Users data
 $UsersToCreate = @(
     @{
-        email = "jane.stylist_$Rand@example.com"
+        email = "jane.stylist_demo@example.com"
         password = "DemoOwnerPass1!"
         phone = "990001$Rand"
         fullName = "Jane Stylist A"
-        username = "jane_stylist_$Rand"
+        username = "jane_stylist_demo"
         role = "SALON_OWNER"
     },
     @{
-        email = "sergei.spa_$Rand@example.com"
+        email = "sergei.spa_demo@example.com"
         password = "DemoOwnerPass1!"
         phone = "990002$Rand"
         fullName = "Sergei Romanov B"
-        username = "sergei_spa_$Rand"
+        username = "sergei_spa_demo"
         role = "SALON_OWNER"
     },
     @{
-        email = "alice.smith_$Rand@example.com"
+        email = "alice.smith_demo@example.com"
         password = "DemoCustPass1!"
         phone = "880001$Rand"
         fullName = "Alice Smith One"
-        username = "alice_smith_$Rand"
+        username = "alice_smith_demo"
         role = "CUSTOMER"
     },
     @{
-        email = "bob.jones_$Rand@example.com"
+        email = "bob.jones_demo@example.com"
         password = "DemoCustPass1!"
         phone = "880002$Rand"
         fullName = "Bob Jones Two"
-        username = "bob_jones_$Rand"
+        username = "bob_jones_demo"
         role = "CUSTOMER"
     },
     @{
-        email = "charlie.brown_$Rand@example.com"
+        email = "charlie.brown_demo@example.com"
         password = "DemoCustPass1!"
         phone = "880003$Rand"
         fullName = "Charlie Brown Three"
-        username = "charlie_brown_$Rand"
+        username = "charlie_brown_demo"
         role = "CUSTOMER"
     }
 )
@@ -112,11 +112,11 @@ foreach ($u in $UsersToCreate) {
     }
 }
 
-$OwnerAToken = $UserTokens["jane.stylist_$Rand@example.com"]
-$OwnerBToken = $UserTokens["sergei.spa_$Rand@example.com"]
-$Cust1Token = $UserTokens["alice.smith_$Rand@example.com"]
-$Cust2Token = $UserTokens["bob.jones_$Rand@example.com"]
-$Cust3Token = $UserTokens["charlie.brown_$Rand@example.com"]
+$OwnerAToken = $UserTokens["jane.stylist_demo@example.com"]
+$OwnerBToken = $UserTokens["sergei.spa_demo@example.com"]
+$Cust1Token = $UserTokens["alice.smith_demo@example.com"]
+$Cust2Token = $UserTokens["bob.jones_demo@example.com"]
+$Cust3Token = $UserTokens["charlie.brown_demo@example.com"]
 
 if (-not $OwnerAToken -or -not $OwnerBToken -or -not $Cust1Token -or -not $Cust2Token -or -not $Cust3Token) {
     Write-Host "`n[FATAL] Some users failed to register/login. Cannot proceed with data population." -ForegroundColor Red
@@ -445,18 +445,18 @@ Write-Host "         STYLEHUB DEMO DATA POPULATED SUCCESSFULLY!             " -F
 Write-Host "     Use the following credentials in your browser for a demo:   " -ForegroundColor Green
 Write-Host "----------------------------------------------------------------" -ForegroundColor Blue
 Write-Host "  [Salon Owner A (Chic Cuts & Nails Studio - London)]" -ForegroundColor Cyan
-Write-Host "    - Email:    jane.stylist_$Rand@example.com" -ForegroundColor Yellow
+Write-Host "    - Email:    jane.stylist_demo@example.com" -ForegroundColor Yellow
 Write-Host "    - Password: DemoOwnerPass1!" -ForegroundColor Yellow
 Write-Host "  [Salon Owner B (Aura Zen Wellness & Spa - Manchester)]" -ForegroundColor Cyan
-Write-Host "    - Email:    sergei.spa_$Rand@example.com" -ForegroundColor Yellow
+Write-Host "    - Email:    sergei.spa_demo@example.com" -ForegroundColor Yellow
 Write-Host "    - Password: DemoOwnerPass1!" -ForegroundColor Yellow
 Write-Host "  [Customer 1 (Alice Smith One)]" -ForegroundColor Cyan
-Write-Host "    - Email:    alice.smith_$Rand@example.com" -ForegroundColor Yellow
+Write-Host "    - Email:    alice.smith_demo@example.com" -ForegroundColor Yellow
 Write-Host "    - Password: DemoCustPass1!" -ForegroundColor Yellow
 Write-Host "  [Customer 2 (Bob Jones Two)]" -ForegroundColor Cyan
-Write-Host "    - Email:    bob.jones_$Rand@example.com" -ForegroundColor Yellow
+Write-Host "    - Email:    bob.jones_demo@example.com" -ForegroundColor Yellow
 Write-Host "    - Password: DemoCustPass1!" -ForegroundColor Yellow
 Write-Host "  [Customer 3 (Charlie Brown Three)]" -ForegroundColor Cyan
-Write-Host "    - Email:    charlie.brown_$Rand@example.com" -ForegroundColor Yellow
+Write-Host "    - Email:    charlie.brown_demo@example.com" -ForegroundColor Yellow
 Write-Host "    - Password: DemoCustPass1!" -ForegroundColor Yellow
 Write-Host "================================================================" -ForegroundColor Blue

@@ -40,10 +40,10 @@ const LoginForm = ({ role }) => {
 
   const fillDemoCredentials = (setFieldValue) => {
     if (role === "CUSTOMER") {
-      setFieldValue("email", "alice.smith_9505@example.com");
+      setFieldValue("email", "alice.smith_demo@example.com");
       setFieldValue("password", "DemoCustPass1!");
     } else {
-      setFieldValue("email", "jane.stylist_9505@example.com");
+      setFieldValue("email", "jane.stylist_demo@example.com");
       setFieldValue("password", "DemoOwnerPass1!");
     }
   };

@@ -33,6 +33,22 @@ $UsersToCreate = @(
         role = "SALON_OWNER"
     },
     @{
+        email = "hyd.owner1_demo@example.com"
+        password = "DemoOwnerPass1!"
+        phone = "990003$Rand"
+        fullName = "Ramesh Kumar"
+        username = "ramesh_kumar_demo"
+        role = "SALON_OWNER"
+    },
+    @{
+        email = "hyd.owner2_demo@example.com"
+        password = "DemoOwnerPass1!"
+        phone = "990004$Rand"
+        fullName = "Ananya Reddy"
+        username = "ananya_reddy_demo"
+        role = "SALON_OWNER"
+    },
+    @{
         email = "alice.smith_demo@example.com"
         password = "DemoCustPass1!"
         phone = "880001$Rand"
@@ -89,7 +105,6 @@ foreach ($u in $UsersToCreate) {
             $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
             Write-Host "Detail: $($reader.ReadToEnd())" -ForegroundColor Red
         }
-        continue
     }
 
     Write-Host "Logging in $($u.fullName)..." -ForegroundColor Cyan
@@ -114,11 +129,13 @@ foreach ($u in $UsersToCreate) {
 
 $OwnerAToken = $UserTokens["jane.stylist_demo@example.com"]
 $OwnerBToken = $UserTokens["sergei.spa_demo@example.com"]
+$OwnerCToken = $UserTokens["hyd.owner1_demo@example.com"]
+$OwnerDToken = $UserTokens["hyd.owner2_demo@example.com"]
 $Cust1Token = $UserTokens["alice.smith_demo@example.com"]
 $Cust2Token = $UserTokens["bob.jones_demo@example.com"]
 $Cust3Token = $UserTokens["charlie.brown_demo@example.com"]
 
-if (-not $OwnerAToken -or -not $OwnerBToken -or -not $Cust1Token -or -not $Cust2Token -or -not $Cust3Token) {
+if (-not $OwnerAToken -or -not $OwnerBToken -or -not $OwnerCToken -or -not $OwnerDToken -or -not $Cust1Token -or -not $Cust2Token -or -not $Cust3Token) {
     Write-Host "`n[FATAL] Some users failed to register/login. Cannot proceed with data population." -ForegroundColor Red
     exit 1
 }
@@ -181,6 +198,60 @@ try {
     exit 1
 }
 
+# Salon C (Owner C - Hyderabad)
+$SalonCPayload = @{
+    name = "Royal Hyderabad Hair Lounge"
+    address = "Road No 36, Jubilee Hills"
+    phoneNumber = "040-6600-0111"
+    email = "jubilee@royalhair.com"
+    city = "Hyderabad"
+    openTime = "09:00:00"
+    closeTime = "21:00:00"
+    isOpen = $true
+    homeService = $false
+    active = $true
+} | ConvertTo-Json
+
+try {
+    $SalonCRes = Invoke-RestMethod -Uri "$GatewayUrl/api/salons" -Method Post -Headers @{ "Authorization" = $OwnerCToken } -ContentType "application/json" -Body $SalonCPayload -ErrorAction Stop
+    $SalonCId = $SalonCRes.id
+    Write-Host "[SUCCESS] Created Salon C: $($SalonCRes.name) (ID: $SalonCId, City: Hyderabad)" -ForegroundColor Green
+} catch {
+    Write-Host "[ERROR] Failed to create Salon C: $_" -ForegroundColor Red
+    if ($_.Exception.Response) {
+        $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
+        Write-Host "Detail: $($reader.ReadToEnd())" -ForegroundColor Red
+    }
+    exit 1
+}
+
+# Salon D (Owner D - Hyderabad)
+$SalonDPayload = @{
+    name = "Charminar Wellness & Spa"
+    address = "Near Charminar, Old City"
+    phoneNumber = "040-6600-0222"
+    email = "spa@charminarwell.com"
+    city = "Hyderabad"
+    openTime = "10:00:00"
+    closeTime = "22:00:00"
+    isOpen = $true
+    homeService = $true
+    active = $true
+} | ConvertTo-Json
+
+try {
+    $SalonDRes = Invoke-RestMethod -Uri "$GatewayUrl/api/salons" -Method Post -Headers @{ "Authorization" = $OwnerDToken } -ContentType "application/json" -Body $SalonDPayload -ErrorAction Stop
+    $SalonDId = $SalonDRes.id
+    Write-Host "[SUCCESS] Created Salon D: $($SalonDRes.name) (ID: $SalonDId, City: Hyderabad)" -ForegroundColor Green
+} catch {
+    Write-Host "[ERROR] Failed to create Salon D: $_" -ForegroundColor Red
+    if ($_.Exception.Response) {
+        $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
+        Write-Host "Detail: $($reader.ReadToEnd())" -ForegroundColor Red
+    }
+    exit 1
+}
+
 # 4. Create Categories SECOND
 Write-Host "`n----------------------------------------------------------------" -ForegroundColor Blue
 Write-Host "CREATING SALON CATEGORIES..." -ForegroundColor Cyan
@@ -195,6 +266,16 @@ $CategoriesOwnerA = @(
 $CategoriesOwnerB = @(
     @{ name = "Therapeutic Massage $Rand"; image = "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=500" },
     @{ name = "Skin Care & Facials $Rand"; image = "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=500" }
+)
+
+# Owner C creates Hair category
+$CategoriesOwnerC = @(
+    @{ name = "Hyderabad Special Grooming $Rand"; image = "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=500" }
+)
+
+# Owner D creates Massage category
+$CategoriesOwnerD = @(
+    @{ name = "Charminar Herbal Therapy $Rand"; image = "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=500" }
 )
 
 $CategoryIds = @()
@@ -235,8 +316,36 @@ foreach ($cat in $CategoriesOwnerB) {
     }
 }
 
-if ($CategoryIds.Count -lt 4) {
-    Write-Host "[FATAL] Failed to create all 4 categories. Cannot proceed." -ForegroundColor Red
+# Register Owner C Categories
+foreach ($cat in $CategoriesOwnerC) {
+    $Payload = $cat | ConvertTo-Json
+    try {
+        $Res = Invoke-RestMethod -Uri "$GatewayUrl/api/categories/salon-owner" -Method Post -Headers @{ "Authorization" = $OwnerCToken } -ContentType "application/json" -Body $Payload -ErrorAction Stop
+        if ($Res.id) {
+            $CategoryIds += $Res.id
+            Write-Host "[SUCCESS] Created Category for Salon C: $($Res.name) (ID: $($Res.id))" -ForegroundColor Green
+        }
+    } catch {
+        Write-Host "[ERROR] Failed to create category $($cat.name): $_" -ForegroundColor Red
+    }
+}
+
+# Register Owner D Categories
+foreach ($cat in $CategoriesOwnerD) {
+    $Payload = $cat | ConvertTo-Json
+    try {
+        $Res = Invoke-RestMethod -Uri "$GatewayUrl/api/categories/salon-owner" -Method Post -Headers @{ "Authorization" = $OwnerDToken } -ContentType "application/json" -Body $Payload -ErrorAction Stop
+        if ($Res.id) {
+            $CategoryIds += $Res.id
+            Write-Host "[SUCCESS] Created Category for Salon D: $($Res.name) (ID: $($Res.id))" -ForegroundColor Green
+        }
+    } catch {
+        Write-Host "[ERROR] Failed to create category $($cat.name): $_" -ForegroundColor Red
+    }
+}
+
+if ($CategoryIds.Count -lt 6) {
+    Write-Host "[FATAL] Failed to create all categories. Cannot proceed." -ForegroundColor Red
     exit 1
 }
 
@@ -244,6 +353,8 @@ $CatHairId = $CategoryIds[0]
 $CatNailId = $CategoryIds[1]
 $CatMassageId = $CategoryIds[2]
 $CatFacialId = $CategoryIds[3]
+$CatHydHairId = $CategoryIds[4]
+$CatHydMassageId = $CategoryIds[5]
 
 # 5. Create Service Offerings
 Write-Host "`n----------------------------------------------------------------" -ForegroundColor Blue
@@ -316,6 +427,30 @@ $OfferingsToCreate = @(
             duration = 50
             category = [int]$CatFacialId
             image = "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?w=500"
+        }
+    },
+    # Salon C Offerings (Hyderabad)
+    @{
+        token = $OwnerCToken
+        payload = @{
+            name = "Royal Nizami Haircut"
+            description = "Traditional style Nizami haircut and organic beard conditioning."
+            price = 50
+            duration = 45
+            category = [int]$CatHydHairId
+            image = "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=500"
+        }
+    },
+    # Salon D Offerings (Hyderabad)
+    @{
+        token = $OwnerDToken
+        payload = @{
+            name = "Charminar Elixir Massage"
+            description = "Aromatic oil full body massage inspired by ancient herbal therapies."
+            price = 90
+            duration = 60
+            category = [int]$CatHydMassageId
+            image = "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?w=500"
         }
     }
 )

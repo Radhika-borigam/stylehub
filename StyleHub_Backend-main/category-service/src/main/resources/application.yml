@@ -1,0 +1,25 @@
+server:
+  port: 5003
+
+spring:
+  application:
+    name: category-service
+
+  datasource:
+    url: "jdbc:mysql://category-db:3306/stylehub_category_db?createDatabaseIfNotExist=true"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}

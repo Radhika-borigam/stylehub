@@ -1,0 +1,25 @@
+server:
+  port: 5007
+
+spring:
+  application:
+    name: review-service
+
+  datasource:
+    url: "jdbc:mysql://review-db:3306/stylehub_review_db?createDatabaseIfNotExist=true"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}

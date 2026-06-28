@@ -1,0 +1,25 @@
+server:
+  port: 5004
+
+spring:
+  application:
+    name: service-offering
+
+  datasource:
+    url: "jdbc:mysql://service-offering-db:3306/stylehub_service_offering_db?createDatabaseIfNotExist=true"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}

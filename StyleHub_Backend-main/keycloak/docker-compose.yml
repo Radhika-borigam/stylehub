@@ -1,0 +1,23 @@
+services:
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    container_name: stylehub-keycloak
+    command:
+      - start-dev
+      - --import-realm
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      JAVA_OPTS_APPEND: "-Xms128m -Xmx384m"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
+    networks:
+      - stylehub-network
+    mem_limit: 512m
+
+networks:
+  stylehub-network:
+    external: true

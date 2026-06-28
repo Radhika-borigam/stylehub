@@ -1,0 +1,33 @@
+server:
+  port: 5001
+
+spring:
+  application:
+    name: user-service
+
+  datasource:
+    url: "jdbc:mysql://user-db:3306/stylehub_user_db?createDatabaseIfNotExist=true"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}
+
+keycloak:
+  server-url: ${KEYCLOAK_URL:http://keycloak:8080}
+  realm: master
+  client-id: ${KEYCLOAK_CLIENT_ID:stylehub-client}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET}
+  admin-username: ${KEYCLOAK_ADMIN_USERNAME:admin}
+  admin-password: ${KEYCLOAK_ADMIN_PASSWORD:admin}

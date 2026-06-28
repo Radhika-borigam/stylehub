@@ -1,0 +1,29 @@
+# Node dependencies and builds
+**/node_modules/
+**/dist/
+**/build/
+.eslintcache
+
+# Compiled Java resources
+**/target/
+**/*.class
+**/*.jar
+**/*.war
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Microservices local configs & data
+stylehub-mysql/
+stylehub_mysql_data/
+*.log

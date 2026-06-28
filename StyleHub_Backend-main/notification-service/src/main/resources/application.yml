@@ -1,0 +1,38 @@
+server:
+  port: 5008
+
+info:
+  app:
+    name: "Notification Service"
+    description: "Notification Service API For Salon Booking System"
+    version: "1.0.0"
+
+spring:
+  application:
+    name: notification-service
+
+  datasource:
+    url: "jdbc:mysql://notification-db:3306/stylehub_notification_db?createDatabaseIfNotExist=true"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  rabbitmq:
+    port: 5672
+    host: localhost
+    username: guest
+    password: guest
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}
+

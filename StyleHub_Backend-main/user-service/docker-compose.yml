@@ -1,0 +1,40 @@
+services:
+  user-db:
+    image: mysql:8.0
+    container_name: stylehub-user-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: stylehub_user_db
+    ports:
+      - "3301:3306"
+    volumes:
+      - user_db_data:/var/lib/mysql
+    networks:
+      - stylehub-network
+
+  user-service:
+    build:
+      context: ./
+    container_name: stylehub-user-service
+    depends_on:
+      - user-db
+    ports:
+      - "5001:5001"
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      KEYCLOAK_URL: http://stylehub-keycloak:8080
+      EUREKA_SERVER_URL: http://eureka-server:8070/eureka
+      KEYCLOAK_CLIENT_ID: stylehub-client
+      KEYCLOAK_CLIENT_SECRET: Lqvt8lyqyUyg82MKwAADqWIvZMW5Szwb
+      KEYCLOAK_ADMIN_USERNAME: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    networks:
+      - stylehub-network
+
+volumes:
+  user_db_data:
+
+networks:
+  stylehub-network:
+    external: true

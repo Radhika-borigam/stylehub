@@ -1,0 +1,39 @@
+server:
+  port: 5006
+
+spring:
+  application:
+    name: payment-service
+
+  datasource:
+    url: "jdbc:mysql://payment-db:3306/stylehub_payment_db?createDatabaseIfNotExist=true"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:rabbitmq}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: guest
+    password: guest
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8070/eureka/}
+
+razorpay:
+  api:
+    key: rzp_test_Swm82JN9qwh9go
+    secret: zebSp8MEUciYyRQY1gijTdi7
+
+stripe:
+  api:
+    key: ${STRIPE_API_KEY:sk_test_dummy}

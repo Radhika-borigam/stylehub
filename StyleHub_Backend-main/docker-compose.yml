@@ -1,0 +1,226 @@
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: stylehub-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - stylehub-network
+    mem_limit: 250m
+
+  stylehub-mysql:
+    image: mysql:8.0
+    container_name: stylehub-mysql
+    command: --performance-schema=OFF --key-buffer-size=16M --tmp-table-size=16M --max-connections=100
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: stylehub_db
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "3306:3306"
+    volumes:
+      - stylehub_mysql_data:/var/lib/mysql
+    networks:
+      stylehub-network:
+        aliases:
+          - user-db
+          - salon-db
+          - category-db
+          - service-offering-db
+          - booking-db
+          - payment-db
+          - review-db
+          - notification-db
+    mem_limit: 350m
+
+  eureka-server:
+    build:
+      context: ./eureka-server
+    container_name: stylehub-eureka-server
+    ports:
+      - "8070:8070"
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xmx96m -Xms32m -XX:+UseSerialGC -XX:TieredStopAtLevel=1"
+    networks:
+      - stylehub-network
+    mem_limit: 256m
+
+  gateway-service:
+    build:
+      context: ./gateway-service
+    container_name: stylehub-gateway-service
+    depends_on:
+      - eureka-server
+    ports:
+      - "8081:8081"
+    environment:
+      EUREKA_SERVER_URL: http://eureka-server:8070/eureka
+      JAVA_TOOL_OPTIONS: "-Xmx128m -Xms32m -XX:+UseSerialGC -XX:TieredStopAtLevel=1"
+    networks:
+      - stylehub-network
+    mem_limit: 256m
+
+  user-service:
+    build:
+      context: ./user-service
+    container_name: stylehub-user-service
+    depends_on:
+      - stylehub-mysql
+      - eureka-server
+    ports:
+      - "5001:5001"
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      KEYCLOAK_URL: http://stylehub-keycloak:8080
+      EUREKA_SERVER_URL: http://eureka-server:8070/eureka
+      KEYCLOAK_CLIENT_ID: stylehub-client
+      KEYCLOAK_CLIENT_SECRET: Lqvt8lyqyUyg82MKwAADqWIvZMW5Szwb
+      KEYCLOAK_ADMIN_USERNAME: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      JAVA_TOOL_OPTIONS: "-Xmx128m -Xms32m -XX:+UseSerialGC -XX:TieredStopAtLevel=1"
+    networks:
+      - stylehub-network
+    mem_limit: 300m
+
+  salon-service:
+    build:
+      context: ./salon-service
+    container_name: stylehub-salon-service
+    depends_on:
+      - stylehub-mysql
+      - eureka-server
+    ports:
+      - "5002:5002"
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      EUREKA_SERVER_URL: http://eureka-server:8070/eureka
+      JAVA_TOOL_OPTIONS: "-Xmx128m -Xms32m -XX:+UseSerialGC -XX:TieredStopAtLevel=1"
+    networks:
+      - stylehub-network
+    mem_limit: 350m
+
+  category-service:
+    build:
+      context: ./category-service
+    container_name: stylehub-category-service
+    depends_on:
+      - stylehub-mysql
+      - eureka-server
+    ports:
+      - "5003:5003"
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      EUREKA_SERVER_URL: http://eureka-server:8070/eureka
+      JAVA_TOOL_OPTIONS: "-Xmx96m -Xms32m -XX:+UseSerialGC -XX:TieredStopAtLevel=1"
+    networks:
+      - stylehub-network
+    mem_limit: 300m
+
+  service-offering-service:
+    build:
+      context: ./service-offering
+    container_name: stylehub-service-offering-service
+    depends_on:
+      - stylehub-mysql
+      - eureka-server
+    ports:
+      - "5004:5004"
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      EUREKA_SERVER_URL: http://eureka-server:8070/eureka
+      JAVA_TOOL_OPTIONS: "-Xmx128m -Xms32m -XX:+UseSerialGC -XX:TieredStopAtLevel=1"
+    networks:
+      - stylehub-network
+    mem_limit: 300m
+
+  booking-service:
+    build:
+      context: ./booking-service
+    container_name: stylehub-booking-service
+    depends_on:
+      - stylehub-mysql
+      - rabbitmq
+      - eureka-server
+    ports:
+      - "5005:5005"
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      EUREKA_SERVER_URL: http://eureka-server:8070/eureka
+      JAVA_TOOL_OPTIONS: "-Xmx128m -Xms32m -XX:+UseSerialGC -XX:TieredStopAtLevel=1"
+    networks:
+      - stylehub-network
+    mem_limit: 300m
+
+  payment-service:
+    build:
+      context: ./payment-service
+    container_name: stylehub-payment-service
+    depends_on:
+      - stylehub-mysql
+      - rabbitmq
+      - eureka-server
+    ports:
+      - "5006:5006"
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      EUREKA_SERVER_URL: http://eureka-server:8070/eureka
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      JAVA_TOOL_OPTIONS: "-Xmx128m -Xms32m -XX:+UseSerialGC -XX:TieredStopAtLevel=1"
+    networks:
+      - stylehub-network
+    mem_limit: 300m
+
+  review-service:
+    build:
+      context: ./review-service
+    container_name: stylehub-review-service
+    depends_on:
+      - stylehub-mysql
+      - eureka-server
+    ports:
+      - "5007:5007"
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      EUREKA_SERVER_URL: http://eureka-server:8070/eureka
+      JAVA_TOOL_OPTIONS: "-Xmx96m -Xms32m -XX:+UseSerialGC -XX:TieredStopAtLevel=1"
+    networks:
+      - stylehub-network
+    mem_limit: 256m
+
+  notification-service:
+    build:
+      context: ./notification-service
+    container_name: stylehub-notification-service
+    depends_on:
+      - stylehub-mysql
+      - rabbitmq
+      - eureka-server
+    ports:
+      - "5008:5008"
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      EUREKA_SERVER_URL: http://eureka-server:8070/eureka
+      SPRING_RABBITMQ_HOST: rabbitmq
+      JAVA_TOOL_OPTIONS: "-Xmx96m -Xms32m -XX:+UseSerialGC -XX:TieredStopAtLevel=1"
+    networks:
+      - stylehub-network
+    mem_limit: 256m
+
+
+volumes:
+  stylehub_mysql_data:
+
+networks:
+  stylehub-network:
+    external: true
